@@ -32,4 +32,7 @@ public class ScheduleController {
     public ResponseEntity<List<GetAllScheduleResponse>> getAllSchedule(@RequestParam(required = false) String authorName) {
         return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAll(authorName));
     }
+
+    @PatchMapping("/schedules/{scheduleId}")
+    public ResponseEntity<>
 }
