@@ -21,8 +21,8 @@ public class ScheduleService {
         Schedule schedule = new Schedule(
                 request.getTitle(),
                 request.getContent(),
-                request.getAuthorName(),
-                request.getPassword()
+                request.getAuthorName()
+//                request.getPassword()
         );
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
@@ -89,9 +89,9 @@ public class ScheduleService {
                 () -> new IllegalStateException("없는 일정입니다.")
         );
 
-        if(!schedule.getPassword().equals(request.getPassword())) {
-            throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
-        }
+//        if(!schedule.getPassword().equals(request.getPassword())) {
+//            throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
+//        }
 
         schedule.modifyInfo(request.getTitle(), request.getAuthorName());
 
