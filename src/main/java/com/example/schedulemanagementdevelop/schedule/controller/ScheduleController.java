@@ -2,14 +2,12 @@ package com.example.schedulemanagementdevelop.schedule.controller;
 
 import com.example.schedulemanagementdevelop.schedule.dto.CreateScheduleRequest;
 import com.example.schedulemanagementdevelop.schedule.dto.CreateScheduleResponse;
+import com.example.schedulemanagementdevelop.schedule.dto.GetOneScheduleResponse;
 import com.example.schedulemanagementdevelop.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +21,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules/{scheduleId}")
-    public ResponseEntity<>
+    public ResponseEntity<GetOneScheduleResponse> getOneSchedule(@PathVariable Long scheduleId) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOne(scheduleId));
+    }
 }
