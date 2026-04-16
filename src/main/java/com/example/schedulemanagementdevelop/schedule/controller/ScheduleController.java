@@ -24,4 +24,7 @@ public class ScheduleController {
     public ResponseEntity<GetOneScheduleResponse> getOneSchedule(@PathVariable Long scheduleId) {
         return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOne(scheduleId));
     }
+
+    @GetMapping("/schedules")
+    public ResponseEntity<>
 }
