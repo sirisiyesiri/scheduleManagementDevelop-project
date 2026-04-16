@@ -2,12 +2,15 @@ package com.example.schedulemanagementdevelop.schedule.controller;
 
 import com.example.schedulemanagementdevelop.schedule.dto.CreateScheduleRequest;
 import com.example.schedulemanagementdevelop.schedule.dto.CreateScheduleResponse;
+import com.example.schedulemanagementdevelop.schedule.dto.GetAllScheduleResponse;
 import com.example.schedulemanagementdevelop.schedule.dto.GetOneScheduleResponse;
 import com.example.schedulemanagementdevelop.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,5 +29,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<>
+    public ResponseEntity<List<GetAllScheduleResponse>> getAllSchedule(@RequestParam(required = false) String authorName) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAll(authorName));
+    }
 }

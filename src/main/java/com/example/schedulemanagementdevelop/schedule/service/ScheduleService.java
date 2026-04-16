@@ -2,12 +2,16 @@ package com.example.schedulemanagementdevelop.schedule.service;
 
 import com.example.schedulemanagementdevelop.schedule.dto.CreateScheduleRequest;
 import com.example.schedulemanagementdevelop.schedule.dto.CreateScheduleResponse;
+import com.example.schedulemanagementdevelop.schedule.dto.GetAllScheduleResponse;
 import com.example.schedulemanagementdevelop.schedule.dto.GetOneScheduleResponse;
 import com.example.schedulemanagementdevelop.schedule.entity.Schedule;
 import com.example.schedulemanagementdevelop.schedule.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -49,5 +53,36 @@ public class ScheduleService {
                 schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetAllScheduleResponse> getAll(String authorName) {
+        List<Schedule> schedules = new ArrayList<>();
+
+        if(authorName != null) {
+            schedules = scheduleRepository.findAllByAuthorNameOrderByModifiedAtDesc(authorName);
+
+            return schedules.stream()
+                    .map(schedule -> new GetAllScheduleResponse(
+                            schedule.getId(),
+                            schedule.getTitle(),
+                            schedule.getContent(),
+                            schedule.getAuthorName(),
+                            schedule.getCreatedAt(),
+                            schedule.getModifiedAt()
+                    )).toList();
+        }
+
+        schedules = scheduleRepository.findAllByOrderByModifiedAtDesc();
+
+        return schedules.stream()
+                .map(schedule -> new GetAllScheduleResponse(
+                        schedule.getId(),
+                        schedule.getTitle(),
+                        schedule.getContent(),
+                        schedule.getAuthorName(),
+                        schedule.getCreatedAt(),
+                        schedule.getModifiedAt()
+                )).toList();
     }
 }
