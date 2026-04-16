@@ -26,4 +26,13 @@ public class Schedule extends BaseEntity{
         this.authorName = authorName;
         this.password = password;
     }
+
+    public void modifyInfo(String title, String authorName) {
+        if(title != null) {
+            this.title = title;
+        }
+        if(authorName != null) {
+            this.authorName = authorName;
+        }
+    }
 }

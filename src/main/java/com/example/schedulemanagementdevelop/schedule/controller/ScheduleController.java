@@ -1,13 +1,11 @@
 package com.example.schedulemanagementdevelop.schedule.controller;
 
-import com.example.schedulemanagementdevelop.schedule.dto.CreateScheduleRequest;
-import com.example.schedulemanagementdevelop.schedule.dto.CreateScheduleResponse;
-import com.example.schedulemanagementdevelop.schedule.dto.GetAllScheduleResponse;
-import com.example.schedulemanagementdevelop.schedule.dto.GetOneScheduleResponse;
+import com.example.schedulemanagementdevelop.schedule.dto.*;
 import com.example.schedulemanagementdevelop.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,5 +32,10 @@ public class ScheduleController {
     }
 
     @PatchMapping("/schedules/{scheduleId}")
-    public ResponseEntity<>
+    public ResponseEntity<ModifyScheduleResponse> modifySchedule(
+            @PathVariable Long scheduleId,
+            @Validated @RequestBody CreateScheduleRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.modify(scheduleId, request));
+    }
 }
