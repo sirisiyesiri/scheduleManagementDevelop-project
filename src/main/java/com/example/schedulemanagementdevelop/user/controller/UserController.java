@@ -1,9 +1,6 @@
 package com.example.schedulemanagementdevelop.user.controller;
 
-import com.example.schedulemanagementdevelop.user.dto.CreateUserRequest;
-import com.example.schedulemanagementdevelop.user.dto.CreateUserResponse;
-import com.example.schedulemanagementdevelop.user.dto.GetAllUserResponse;
-import com.example.schedulemanagementdevelop.user.dto.GetOneUserResponse;
+import com.example.schedulemanagementdevelop.user.dto.*;
 import com.example.schedulemanagementdevelop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,5 +32,10 @@ public class UserController {
     }
 
     @PostMapping("/users/{userId}")
-    public ResponseEntity<>
+    public ResponseEntity<ModifyUserResponse> modifyUser(
+            @PathVariable Long userId,
+            @RequestBody ModifyUserRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.modify(userId, request));
+    }
 }
