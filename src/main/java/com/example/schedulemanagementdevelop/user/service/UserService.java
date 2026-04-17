@@ -1,7 +1,9 @@
 package com.example.schedulemanagementdevelop.user.service;
 
+import com.example.schedulemanagementdevelop.schedule.dto.GetAllScheduleResponse;
 import com.example.schedulemanagementdevelop.user.dto.CreateUserRequest;
 import com.example.schedulemanagementdevelop.user.dto.CreateUserResponse;
+import com.example.schedulemanagementdevelop.user.dto.GetAllUserResponse;
 import com.example.schedulemanagementdevelop.user.dto.GetOneUserResponse;
 import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.repository.UserRepository;
@@ -9,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,5 +51,19 @@ public class UserService {
                 user.getCreatedAt(),
                 user.getModifiedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetAllUserResponse> findAll() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(user -> new GetAllUserResponse(
+                        user.getId(),
+                        user.getUserName(),
+                        user.getEmail(),
+                        user.getCreatedAt(),
+                        user.getModifiedAt()
+                )).toList();
     }
 }
