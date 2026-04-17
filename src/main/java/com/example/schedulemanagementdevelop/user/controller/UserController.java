@@ -2,15 +2,13 @@ package com.example.schedulemanagementdevelop.user.controller;
 
 import com.example.schedulemanagementdevelop.user.dto.CreateUserRequest;
 import com.example.schedulemanagementdevelop.user.dto.CreateUserResponse;
+import com.example.schedulemanagementdevelop.user.dto.GetOneUserResponse;
 import com.example.schedulemanagementdevelop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,5 +22,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<>
+    public ResponseEntity<GetOneUserResponse> getOneUser(@PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findOne(userId));
+    }
 }

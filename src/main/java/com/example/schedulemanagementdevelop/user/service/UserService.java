@@ -2,6 +2,7 @@ package com.example.schedulemanagementdevelop.user.service;
 
 import com.example.schedulemanagementdevelop.user.dto.CreateUserRequest;
 import com.example.schedulemanagementdevelop.user.dto.CreateUserResponse;
+import com.example.schedulemanagementdevelop.user.dto.GetOneUserResponse;
 import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,21 @@ public class UserService {
                 savedUser.getEmail(),
                 savedUser.getCreatedAt(),
                 savedUser.getModifiedAt()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public GetOneUserResponse findOne(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalStateException("없는 유저입니다.")
+        );
+
+        return new GetOneUserResponse(
+                user.getId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getCreatedAt(),
+                user.getModifiedAt()
         );
     }
 }
