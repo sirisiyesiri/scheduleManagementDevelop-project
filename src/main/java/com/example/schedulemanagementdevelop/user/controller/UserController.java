@@ -1,9 +1,14 @@
 package com.example.schedulemanagementdevelop.user.controller;
 
+import com.example.schedulemanagementdevelop.user.dto.CreateUserRequest;
+import com.example.schedulemanagementdevelop.user.dto.CreateUserResponse;
 import com.example.schedulemanagementdevelop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -13,5 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<>
+    public ResponseEntity<CreateUserResponse> createUser(@RequestBody CreateUserRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(request));
+    }
 }
