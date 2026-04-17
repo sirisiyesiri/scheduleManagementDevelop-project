@@ -33,4 +33,7 @@ public class UserController {
     public ResponseEntity<List<GetAllUserResponse>> getAllUser() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAll());
     }
+
+    @PostMapping("/users/{userId}")
+    public ResponseEntity<>
 }
