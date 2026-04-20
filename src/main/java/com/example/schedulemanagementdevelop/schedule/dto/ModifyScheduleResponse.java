@@ -12,7 +12,6 @@ public class ModifyScheduleResponse {
     private final Long id;
     private final String title;
     private final String content;
-    private final String authorName;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 }

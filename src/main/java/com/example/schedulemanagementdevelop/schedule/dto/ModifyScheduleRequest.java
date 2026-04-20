@@ -7,7 +7,6 @@ import lombok.Getter;
 public class ModifyScheduleRequest {
 
     private String title;
-    private String authorName;
 
 //    @NotBlank(message = "비밀번호를 입력해주셔야합니다.")
 //    private String password;

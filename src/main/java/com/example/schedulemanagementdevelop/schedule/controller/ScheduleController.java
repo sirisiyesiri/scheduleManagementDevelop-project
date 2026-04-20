@@ -27,8 +27,8 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<List<GetAllScheduleResponse>> getAllSchedule(@RequestParam(required = false) String authorName) {
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAll(authorName));
+    public ResponseEntity<List<GetAllScheduleResponse>> getAllSchedule(@RequestParam(required = false) String userName) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAll(userName));
     }
 
     @PatchMapping("/schedules/{scheduleId}")
