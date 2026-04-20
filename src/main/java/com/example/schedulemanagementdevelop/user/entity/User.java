@@ -18,14 +18,20 @@ public class User extends BaseEntity {
     private Long id;
     private String userName;
     private String email;
+    private String password;
 
-    public User(String userName, String email) {
+    public User(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
+        this.password = password;
     }
 
     public void modifyInfo(String userName, String email) {
-        this.userName = userName;
-        this.email = email;
+        if(userName != null) {
+            this.userName = userName;
+        }
+        if(email != null) {
+            this.email = email;
+        }
     }
 }

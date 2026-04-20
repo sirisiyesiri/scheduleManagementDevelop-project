@@ -21,7 +21,8 @@ public class UserService {
     public CreateUserResponse save(CreateUserRequest request) {
         User user = new User(
                 request.getUserName(),
-                request.getEmail()
+                request.getEmail(),
+                request.getPassword()
         );
 
         User savedUser = userRepository.save(user);
@@ -69,6 +70,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalStateException("없는 유저입니다.")
         );
+
 
         user.modifyInfo(
                 request.getUserName(),
