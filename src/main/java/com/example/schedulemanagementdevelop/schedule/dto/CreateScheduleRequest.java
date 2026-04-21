@@ -7,6 +7,5 @@ public class CreateScheduleRequest {
 
     private String title;
     private String content;
-//    private String password;
 
 }

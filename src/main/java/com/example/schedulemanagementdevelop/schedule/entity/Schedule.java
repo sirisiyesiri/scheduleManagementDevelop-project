@@ -20,13 +20,15 @@ public class Schedule extends BaseEntity{
     private String content;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    // User가 있어야 Schedule도 존재할 수 있다.
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)    // optional 불가
+    @JoinColumn(name = "user_id", nullable = false) // nullable 불가
     private User user;
 
-    public Schedule(String title, String content) {
+    public Schedule(String title, String content, User user) {
         this.title = title;
         this.content = content;
+        this.user = user;
     }
 
     public void modifyTitle(String title) {

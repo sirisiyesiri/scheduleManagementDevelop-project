@@ -13,26 +13,27 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/users")
+    @PostMapping()
     public ResponseEntity<CreateUserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(request));
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<GetOneUserResponse> getOneUser(@PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findOne(userId));
     }
 
-    @GetMapping("/users")
+    @GetMapping()
     public ResponseEntity<List<GetAllUserResponse>> getAllUser() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAll());
     }
 
-    @PatchMapping("/users/{userId}")
+    @PatchMapping("/{userId}")
     public ResponseEntity<ModifyUserResponse> modifyUser(
             @PathVariable Long userId,
             @RequestBody ModifyUserRequest request
@@ -40,7 +41,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.modify(userId, request));
     }
 
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.delete(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
