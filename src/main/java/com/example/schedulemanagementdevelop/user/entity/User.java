@@ -23,8 +23,13 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userName;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
     @Column(name = "is_deleted")    // isDeleted 필드와 테이블의 is_deleted 매핑
     private boolean isDeleted = false;
 

@@ -4,6 +4,7 @@ import com.example.schedulemanagementdevelop.schedule.dto.GetAllScheduleResponse
 import com.example.schedulemanagementdevelop.user.dto.*;
 import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -95,5 +96,21 @@ public class UserService {
         }
 
         userRepository.deleteById(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public SessionUser login(@Valid LoginUserRequest request) {
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.")
+        );
+
+        if(!request.getPassword().equals(user.getPassword())) {
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        return new SessionUser(
+                user.getId(),
+                user.getEmail()
+        );
     }
 }
