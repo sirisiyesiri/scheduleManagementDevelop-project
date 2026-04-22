@@ -1,10 +1,8 @@
 package com.example.schedulemanagementdevelop.comment.controller;
 
-import com.example.schedulemanagementdevelop.comment.dto.CreateCommentRequest;
-import com.example.schedulemanagementdevelop.comment.dto.CreateCommentResponse;
-import com.example.schedulemanagementdevelop.comment.dto.GetAllCommentResponse;
-import com.example.schedulemanagementdevelop.comment.dto.GetOneCommentResponse;
+import com.example.schedulemanagementdevelop.comment.dto.*;
 import com.example.schedulemanagementdevelop.comment.service.CommentService;
+import com.example.schedulemanagementdevelop.user.dto.ModifyUserRequest;
 import com.example.schedulemanagementdevelop.user.dto.SessionUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +40,14 @@ public class CommentController {
             @PathVariable Long scheduleId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.findAll(sessionUser, scheduleId));
+    }
+
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<ModifyCommentResponse> modifyComment(
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @PathVariable Long commentId,
+            @Valid @RequestBody ModifyCommentRequest request
+            ) {
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.modify(sessionUser, commentId, request));
     }
 }

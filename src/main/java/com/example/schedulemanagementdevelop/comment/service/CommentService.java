@@ -1,13 +1,7 @@
 package com.example.schedulemanagementdevelop.comment.service;
 
-import com.example.schedulemanagementdevelop.ExceptionHandler.AuthenticationRequiredException;
-import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistComment;
-import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistSchedule;
-import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistUser;
-import com.example.schedulemanagementdevelop.comment.dto.CreateCommentRequest;
-import com.example.schedulemanagementdevelop.comment.dto.CreateCommentResponse;
-import com.example.schedulemanagementdevelop.comment.dto.GetAllCommentResponse;
-import com.example.schedulemanagementdevelop.comment.dto.GetOneCommentResponse;
+import com.example.schedulemanagementdevelop.ExceptionHandler.*;
+import com.example.schedulemanagementdevelop.comment.dto.*;
 import com.example.schedulemanagementdevelop.comment.entity.Comment;
 import com.example.schedulemanagementdevelop.comment.repository.CommentRepository;
 import com.example.schedulemanagementdevelop.schedule.dto.GetAllScheduleResponse;
@@ -103,5 +97,29 @@ public class CommentService {
                         comment.getCreatedAt(),
                         comment.getModifiedAt()
                 )).toList();
+    }
+
+    @Transactional
+    public ModifyCommentResponse modify(SessionUser sessionUser, Long commentId, @Valid ModifyCommentRequest request) {
+        if(sessionUser == null) {   // 로그인 상태 확인
+            throw new AuthenticationRequiredException();
+        }
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                NotExistComment::new
+        );
+
+        if(!sessionUser.getId().equals(comment.getUser().getId())) {    // 자신이 작성한 댓글만 수정, 삭제 가능
+            throw new ForbiddenException();
+        }
+
+        comment.modify(request.getContent());
+
+        return new ModifyCommentResponse(
+                comment.getId(),
+                comment.getContent(),
+                comment.getCreatedAt(),
+                comment.getModifiedAt()
+        );
     }
 }
