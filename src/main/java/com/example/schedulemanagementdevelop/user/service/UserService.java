@@ -1,12 +1,12 @@
 package com.example.schedulemanagementdevelop.user.service;
 
-import com.example.schedulemanagementdevelop.schedule.dto.GetAllScheduleResponse;
+import com.example.schedulemanagementdevelop.ExceptionHandler.LoginFailedException;
+import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistUser;
 import com.example.schedulemanagementdevelop.user.dto.*;
 import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +40,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public GetOneUserResponse findOne(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("없는 유저입니다.")
+                NotExistUser::new
         );
 
         return new GetOneUserResponse(
@@ -69,7 +69,7 @@ public class UserService {
     @Transactional
     public ModifyUserResponse modify(Long userId, ModifyUserRequest request) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("없는 유저입니다.")
+                NotExistUser::new
         );
 
 
@@ -92,7 +92,7 @@ public class UserService {
         boolean existence = userRepository.existsById(userId);
 
         if(!existence) {
-            throw new IllegalStateException("없는 유저입니다.");
+            throw new NotExistUser();
         }
 
         userRepository.deleteById(userId);
@@ -101,11 +101,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public SessionUser login(@Valid LoginUserRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.")
+                LoginFailedException::new
         );
 
         if(!request.getPassword().equals(user.getPassword())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new LoginFailedException();
         }
 
         return new SessionUser(

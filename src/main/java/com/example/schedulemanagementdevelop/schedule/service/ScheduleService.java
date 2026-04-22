@@ -1,5 +1,7 @@
 package com.example.schedulemanagementdevelop.schedule.service;
 
+import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistSchedule;
+import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistUser;
 import com.example.schedulemanagementdevelop.schedule.dto.*;
 import com.example.schedulemanagementdevelop.schedule.entity.Schedule;
 import com.example.schedulemanagementdevelop.schedule.repository.ScheduleRepository;
@@ -9,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,7 +23,7 @@ public class ScheduleService {
     @Transactional
     public CreateScheduleResponse save(Long userId, CreateScheduleRequest request) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("없는 유저입니다.")
+                NotExistUser::new
         );
         Schedule schedule = new Schedule(
                 request.getTitle(),
@@ -42,13 +43,15 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public GetOneScheduleResponse getOne(Long userId, Long scheduleId) {
-        boolean existence = userRepository.existsById(userId);
-        if(!existence) {
-            throw new IllegalStateException("없는 유저입니다.");
-        }
+    public GetOneScheduleResponse getOne(Long scheduleId) {
+//        boolean existence = userRepository.existsById(userId);
+//        if(!existence) {
+//            throw new NotExistUser();
+//        }
+        // 이미 로그인 상태를 확인 했으므로, 여기서 유저의 존재를 한 번 더 확인하는 것은 불필요하다고 판단
+
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("없는 일정입니다.")
+                NotExistSchedule::new
         );
 
         return new GetOneScheduleResponse(
@@ -62,12 +65,14 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetAllScheduleResponse> getAll(Long userId, String userName) {
-        boolean existence = userRepository.existsById(userId);
-        if(!existence) {
-            throw new IllegalStateException("없는 유저입니다.");
-        }
-        List<Schedule> schedules = new ArrayList<>();
+    public List<GetAllScheduleResponse> getAll(String userName) {
+//        boolean existence = userRepository.existsById(userId);
+//        if(!existence) {
+//            throw new NotExistUser();
+//        }
+        // 이미 로그인 상태를 확인 했으므로, 여기서 유저의 존재를 한 번 더 확인하는 것은 불필요하다고 판단
+
+        List<Schedule> schedules;
 
         if(userName != null) {
             schedules = scheduleRepository.findAllByUserName(userName);
@@ -97,9 +102,9 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ModifyScheduleResponse modify(Long scheduleId, CreateScheduleRequest request) {
+    public ModifyScheduleResponse modify(Long scheduleId, ModifyScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("없는 일정입니다.")
+                NotExistSchedule::new
         );
 
         schedule.modifyTitle(request.getTitle());
@@ -117,7 +122,7 @@ public class ScheduleService {
     public void delete(Long scheduleId) {
         boolean existence = scheduleRepository.existsById(scheduleId);
         if(!existence) {
-            throw new IllegalStateException("없는 일정입니다.");
+            throw new NotExistSchedule();
         }
 
         scheduleRepository.deleteById(scheduleId);

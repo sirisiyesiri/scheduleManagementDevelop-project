@@ -32,8 +32,6 @@ public class Schedule extends BaseEntity{
     }
 
     public void modifyTitle(String title) {
-        if(title != null) {
-            this.title = title;
-        }
+        this.title = title;
     }
 }

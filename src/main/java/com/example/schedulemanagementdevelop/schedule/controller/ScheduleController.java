@@ -1,12 +1,13 @@
 package com.example.schedulemanagementdevelop.schedule.controller;
 
+import com.example.schedulemanagementdevelop.ExceptionHandler.AuthenticationRequiredException;
 import com.example.schedulemanagementdevelop.schedule.dto.*;
 import com.example.schedulemanagementdevelop.schedule.service.ScheduleService;
 import com.example.schedulemanagementdevelop.user.dto.SessionUser;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,9 +24,9 @@ public class ScheduleController {
     public ResponseEntity<CreateScheduleResponse> createSchedule(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long userId,
-            @RequestBody CreateScheduleRequest request) {
+            @Valid @RequestBody CreateScheduleRequest request) {
         if(sessionUser == null) {
-            throw new IllegalStateException("로그인이 필요한 기능입니다.");
+            throw new AuthenticationRequiredException();
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(userId, request));
     }
@@ -34,35 +35,33 @@ public class ScheduleController {
     @GetMapping("/{scheduleId}")
     public ResponseEntity<GetOneScheduleResponse> getOneSchedule(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
-            @PathVariable Long userId,
             @PathVariable Long scheduleId) {
         if(sessionUser == null) {
-            throw new IllegalStateException("로그인이 필요한 기능입니다.");
+            throw new AuthenticationRequiredException();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOne(userId, scheduleId));
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOne(scheduleId));
     }
 
     // 일정 전체 조회
     @GetMapping()
     public ResponseEntity<List<GetAllScheduleResponse>> getAllSchedule(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
-            @PathVariable Long userId,
             @RequestParam(required = false) String userName) {
         if(sessionUser == null) {
-            throw new IllegalStateException("로그인이 필요한 기능입니다.");
+            throw new AuthenticationRequiredException();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAll(userId, userName));
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAll(userName));
     }
 
     // 일정 수정
-    @PatchMapping("/{scheduleId}")
+    @PutMapping("/{scheduleId}")
     public ResponseEntity<ModifyScheduleResponse> modifySchedule(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long scheduleId,
-            @Validated @RequestBody CreateScheduleRequest request
+            @Valid @RequestBody ModifyScheduleRequest request
     ) {
         if(sessionUser == null) {
-            throw new IllegalStateException("로그인이 필요한 기능입니다.");
+            throw new AuthenticationRequiredException();
         }
         return ResponseEntity.status(HttpStatus.OK).body(scheduleService.modify(scheduleId, request));
     }
@@ -73,7 +72,7 @@ public class ScheduleController {
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long scheduleId) {
         if(sessionUser == null) {
-            throw new IllegalStateException("로그인이 필요한 기능입니다.");
+            throw new AuthenticationRequiredException();
         }
         scheduleService.delete(scheduleId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

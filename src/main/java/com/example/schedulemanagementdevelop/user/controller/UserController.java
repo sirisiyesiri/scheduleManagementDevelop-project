@@ -1,12 +1,12 @@
 package com.example.schedulemanagementdevelop.user.controller;
 
+import com.example.schedulemanagementdevelop.ExceptionHandler.AuthenticationRequiredException;
 import com.example.schedulemanagementdevelop.user.dto.*;
 import com.example.schedulemanagementdevelop.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,10 +52,10 @@ public class UserController {
     public ResponseEntity<ModifyUserResponse> modifyUser(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long userId,
-            @RequestBody ModifyUserRequest request
+            @Valid @RequestBody ModifyUserRequest request
     ) {
         if(sessionUser == null) {
-            throw new IllegalStateException("로그인이 필요한 기능입니다.");
+            throw new AuthenticationRequiredException();
         }
         return ResponseEntity.status(HttpStatus.OK).body(userService.modify(userId, request));
     }
@@ -66,7 +66,7 @@ public class UserController {
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long userId) {
         if(sessionUser == null) {
-            throw new IllegalStateException("로그인이 필요한 기능입니다.");
+            throw new AuthenticationRequiredException();
         }
         userService.delete(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
