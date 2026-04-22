@@ -26,13 +26,14 @@ public class ScheduleService {
     @Transactional
     public CreateScheduleResponse save(SessionUser sessionUser, CreateScheduleRequest request) {
 
-        if(sessionUser == null) {
+        if(sessionUser == null) {   // 로그인 상태 확인
             throw new AuthenticationRequiredException();
         }
 
         User user = userRepository.findById(sessionUser.getId()).orElseThrow(
-                NotExistUser::new
+                NotExistUser::new   // 유저 존재하지 않을 시에 예외 처리
         );
+
         Schedule schedule = new Schedule(
                 request.getTitle(),
                 request.getContent(),
@@ -138,6 +139,7 @@ public class ScheduleService {
                 schedule.getId(),
                 schedule.getTitle(),
                 schedule.getContent(),
+                schedule.getUser().getUserName(),
                 schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );

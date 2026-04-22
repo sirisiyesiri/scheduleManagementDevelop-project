@@ -1,9 +1,6 @@
 package com.example.schedulemanagementdevelop.user.service;
 
-import com.example.schedulemanagementdevelop.ExceptionHandler.AlreadyLoggedInException;
-import com.example.schedulemanagementdevelop.ExceptionHandler.AuthenticationRequiredException;
-import com.example.schedulemanagementdevelop.ExceptionHandler.LoginFailedException;
-import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistUser;
+import com.example.schedulemanagementdevelop.ExceptionHandler.*;
 import com.example.schedulemanagementdevelop.config.PasswordEncoder;
 import com.example.schedulemanagementdevelop.user.dto.*;
 import com.example.schedulemanagementdevelop.user.entity.User;
@@ -88,6 +85,10 @@ public class UserService {
                 NotExistUser::new
         );
 
+        if(!user.getId().equals(sessionUser.getId())) {   // 본인이 아니면 유저 정보 수정, 삭제 불가
+            throw new ForbiddenException();
+        }
+
 
         user.modifyInfo(
                 request.getUserName(),
@@ -110,10 +111,12 @@ public class UserService {
             throw new AuthenticationRequiredException();
         }
 
-        boolean existence = userRepository.existsById(userId);
+        User user = userRepository.findById(userId).orElseThrow(
+                NotExistUser::new
+        );
 
-        if(!existence) {
-            throw new NotExistUser();
+        if(!user.getId().equals(sessionUser.getId())) {   // 본인이 아니면 유저 정보 수정, 삭제 불가
+            throw new ForbiddenException();
         }
 
         userRepository.deleteById(userId);
