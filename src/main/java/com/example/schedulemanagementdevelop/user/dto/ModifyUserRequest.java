@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class ModifyUserRequest {
 
-    @Size(min = 4, max = 8, message = "사용자 이름은 {min}자 이상 {max}자 이하여야합니다.")
+    @Size(max = 8, message = "사용자 이름은 {max}자 이내여야합니다.")
     private String userName;
 
     @Email(message = "이메일 형식이 올바르지 않습니다.")

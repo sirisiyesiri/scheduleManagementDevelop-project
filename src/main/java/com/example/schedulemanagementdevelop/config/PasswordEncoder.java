@@ -11,6 +11,7 @@ public class PasswordEncoder {
     }
 
     public boolean matches(String rawPassword, String encodedPassword) {
+        // rawPassword 를 같은 방식으로 암호화해서 encodedPassword랑 비교
         BCrypt.Result result = BCrypt.verifyer().verify(rawPassword.toCharArray(), encodedPassword);
         return result.verified;
     }

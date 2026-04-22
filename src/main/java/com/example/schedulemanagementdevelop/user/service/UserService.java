@@ -2,6 +2,7 @@ package com.example.schedulemanagementdevelop.user.service;
 
 import com.example.schedulemanagementdevelop.ExceptionHandler.LoginFailedException;
 import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistUser;
+import com.example.schedulemanagementdevelop.config.PasswordEncoder;
 import com.example.schedulemanagementdevelop.user.dto.*;
 import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.repository.UserRepository;
@@ -17,13 +18,16 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public CreateUserResponse save(CreateUserRequest request) {
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
         User user = new User(
                 request.getUserName(),
                 request.getEmail(),
-                request.getPassword()
+                encodedPassword
         );
 
         User savedUser = userRepository.save(user);
@@ -104,7 +108,12 @@ public class UserService {
                 LoginFailedException::new
         );
 
-        if(!request.getPassword().equals(user.getPassword())) {
+        boolean isMatch = passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword()
+        );
+
+        if(!isMatch) {
             throw new LoginFailedException();
         }
 
