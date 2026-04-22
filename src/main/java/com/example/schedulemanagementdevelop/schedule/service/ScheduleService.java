@@ -1,6 +1,7 @@
 package com.example.schedulemanagementdevelop.schedule.service;
 
 import com.example.schedulemanagementdevelop.ExceptionHandler.AuthenticationRequiredException;
+import com.example.schedulemanagementdevelop.ExceptionHandler.ForbiddenException;
 import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistSchedule;
 import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistUser;
 import com.example.schedulemanagementdevelop.schedule.dto.*;
@@ -119,13 +120,17 @@ public class ScheduleService {
     @Transactional
     public ModifyScheduleResponse modify(SessionUser sessionUser, Long scheduleId, ModifyScheduleRequest request) {
 
-        if(sessionUser == null) {
+        if(sessionUser == null) {   // 로그인 상태 확인
             throw new AuthenticationRequiredException();
         }
 
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 NotExistSchedule::new
         );
+
+        if(!schedule.getUser().getId().equals(sessionUser.getId())) {   // 본인이 작성한 일정이 아니면 수정, 삭제 불가
+            throw new ForbiddenException();
+        }
 
         schedule.modifyTitle(request.getTitle());
 
@@ -140,13 +145,16 @@ public class ScheduleService {
 
     @Transactional
     public void delete(SessionUser sessionUser, Long scheduleId) {
-        if(sessionUser == null) {
+        if(sessionUser == null) {   // 로그인 상태 확인
             throw new AuthenticationRequiredException();
         }
 
-        boolean existence = scheduleRepository.existsById(scheduleId);
-        if(!existence) {
-            throw new NotExistSchedule();
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                NotExistSchedule::new
+        );
+
+        if(!schedule.getUser().getId().equals(sessionUser.getId())) {   // 본인이 작성한 일정이 아니면 수정, 삭제 불가
+            throw new ForbiddenException();
         }
 
         scheduleRepository.deleteById(scheduleId);
