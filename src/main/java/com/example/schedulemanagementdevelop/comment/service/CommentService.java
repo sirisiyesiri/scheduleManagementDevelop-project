@@ -122,4 +122,21 @@ public class CommentService {
                 comment.getModifiedAt()
         );
     }
+
+    @Transactional
+    public void delete(SessionUser sessionUser, Long commentId) {
+        if(sessionUser == null) {   // 로그인 상태 확인
+            throw new AuthenticationRequiredException();
+        }
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                NotExistComment::new
+        );
+
+        if(!sessionUser.getId().equals(comment.getUser().getId())) {    // 자신이 작성한 댓글만 수정, 삭제 가능
+            throw new ForbiddenException();
+        }
+
+        commentRepository.deleteById(commentId);
+    }
 }

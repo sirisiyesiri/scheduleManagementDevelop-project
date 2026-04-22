@@ -50,4 +50,13 @@ public class CommentController {
             ) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.modify(sessionUser, commentId, request));
     }
+
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @PathVariable Long commentId
+    ) {
+        commentService.delete(sessionUser, commentId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
