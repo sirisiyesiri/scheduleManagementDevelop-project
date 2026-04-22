@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("users/{userId}/schedules")
+@RequestMapping("/schedules")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
@@ -23,10 +23,9 @@ public class ScheduleController {
     @PostMapping()
     public ResponseEntity<CreateScheduleResponse> createSchedule(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
-            @PathVariable Long userId,
             @Valid @RequestBody CreateScheduleRequest request) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(sessionUser, userId, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(sessionUser, request));
     }
 
     // 일정 단건 조회

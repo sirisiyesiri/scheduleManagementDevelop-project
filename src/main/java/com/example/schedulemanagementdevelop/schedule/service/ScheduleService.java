@@ -24,13 +24,13 @@ public class ScheduleService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CreateScheduleResponse save(SessionUser sessionUser, Long userId, CreateScheduleRequest request) {
+    public CreateScheduleResponse save(SessionUser sessionUser, CreateScheduleRequest request) {
 
         if(sessionUser == null) {
             throw new AuthenticationRequiredException();
         }
 
-        User user = userRepository.findById(userId).orElseThrow(
+        User user = userRepository.findById(sessionUser.getId()).orElseThrow(
                 NotExistUser::new
         );
         Schedule schedule = new Schedule(
@@ -84,13 +84,13 @@ public class ScheduleService {
 //        }
         // 이미 로그인 상태를 확인 했으므로, 여기서 유저의 존재를 한 번 더 확인하는 것은 불필요하다고 판단
 
-        if(sessionUser == null) {
+        if(sessionUser == null) {   // 로그인 상태 확인
             throw new AuthenticationRequiredException();
         }
 
         List<Schedule> schedules;
 
-        if(userName != null) {
+        if(userName != null) {  // 파라미터 존재 시 userName기준 전체 조회
             schedules = scheduleRepository.findAllByUserName(userName);
 
             return schedules.stream()
