@@ -6,9 +6,11 @@ import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistSchedule;
 import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistUser;
 import com.example.schedulemanagementdevelop.comment.dto.CreateCommentRequest;
 import com.example.schedulemanagementdevelop.comment.dto.CreateCommentResponse;
+import com.example.schedulemanagementdevelop.comment.dto.GetAllCommentResponse;
 import com.example.schedulemanagementdevelop.comment.dto.GetOneCommentResponse;
 import com.example.schedulemanagementdevelop.comment.entity.Comment;
 import com.example.schedulemanagementdevelop.comment.repository.CommentRepository;
+import com.example.schedulemanagementdevelop.schedule.dto.GetAllScheduleResponse;
 import com.example.schedulemanagementdevelop.schedule.entity.Schedule;
 import com.example.schedulemanagementdevelop.schedule.repository.ScheduleRepository;
 import com.example.schedulemanagementdevelop.user.dto.SessionUser;
@@ -19,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -76,5 +80,28 @@ public class CommentService {
                 comment.getCreatedAt(),
                 comment.getModifiedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetAllCommentResponse> findAll(SessionUser sessionUser, Long scheduleId) {
+        if(sessionUser == null) {   // 로그인 상태 확인
+            throw new AuthenticationRequiredException();
+        }
+
+        boolean scheduleExistence = scheduleRepository.existsById(scheduleId);
+        if(!scheduleExistence) {    // 일정 존재 유무 확인
+            throw new NotExistSchedule();
+        }
+
+        List<Comment> comments = commentRepository.findBySchedule_Id(scheduleId);
+
+        return comments.stream()
+                .map(comment -> new GetAllCommentResponse(
+                        comment.getId(),
+                        comment.getContent(),
+                        comment.getUser().getUserName(),
+                        comment.getCreatedAt(),
+                        comment.getModifiedAt()
+                )).toList();
     }
 }
