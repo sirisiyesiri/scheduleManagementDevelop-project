@@ -1,10 +1,12 @@
 package com.example.schedulemanagementdevelop.schedule.service;
 
+import com.example.schedulemanagementdevelop.ExceptionHandler.AuthenticationRequiredException;
 import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistSchedule;
 import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistUser;
 import com.example.schedulemanagementdevelop.schedule.dto.*;
 import com.example.schedulemanagementdevelop.schedule.entity.Schedule;
 import com.example.schedulemanagementdevelop.schedule.repository.ScheduleRepository;
+import com.example.schedulemanagementdevelop.user.dto.SessionUser;
 import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,12 @@ public class ScheduleService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CreateScheduleResponse save(Long userId, CreateScheduleRequest request) {
+    public CreateScheduleResponse save(SessionUser sessionUser, Long userId, CreateScheduleRequest request) {
+
+        if(sessionUser == null) {
+            throw new AuthenticationRequiredException();
+        }
+
         User user = userRepository.findById(userId).orElseThrow(
                 NotExistUser::new
         );
@@ -43,12 +50,16 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public GetOneScheduleResponse getOne(Long scheduleId) {
+    public GetOneScheduleResponse getOne(SessionUser sessionUser, Long scheduleId) {
 //        boolean existence = userRepository.existsById(userId);
 //        if(!existence) {
 //            throw new NotExistUser();
 //        }
         // 이미 로그인 상태를 확인 했으므로, 여기서 유저의 존재를 한 번 더 확인하는 것은 불필요하다고 판단
+
+        if(sessionUser == null) {   // 로그인 상태 확인
+            throw new AuthenticationRequiredException();
+        }
 
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 NotExistSchedule::new
@@ -65,12 +76,16 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetAllScheduleResponse> getAll(String userName) {
+    public List<GetAllScheduleResponse> getAll(SessionUser sessionUser, String userName) {
 //        boolean existence = userRepository.existsById(userId);
 //        if(!existence) {
 //            throw new NotExistUser();
 //        }
         // 이미 로그인 상태를 확인 했으므로, 여기서 유저의 존재를 한 번 더 확인하는 것은 불필요하다고 판단
+
+        if(sessionUser == null) {
+            throw new AuthenticationRequiredException();
+        }
 
         List<Schedule> schedules;
 
@@ -102,7 +117,12 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ModifyScheduleResponse modify(Long scheduleId, ModifyScheduleRequest request) {
+    public ModifyScheduleResponse modify(SessionUser sessionUser, Long scheduleId, ModifyScheduleRequest request) {
+
+        if(sessionUser == null) {
+            throw new AuthenticationRequiredException();
+        }
+
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 NotExistSchedule::new
         );
@@ -119,7 +139,11 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void delete(Long scheduleId) {
+    public void delete(SessionUser sessionUser, Long scheduleId) {
+        if(sessionUser == null) {
+            throw new AuthenticationRequiredException();
+        }
+
         boolean existence = scheduleRepository.existsById(scheduleId);
         if(!existence) {
             throw new NotExistSchedule();

@@ -20,8 +20,12 @@ public class UserController {
 
     // 유저 추가 기능 = 회원가입 기능
     @PostMapping("/users")
-    public ResponseEntity<CreateUserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(request));
+    public ResponseEntity<CreateUserResponse> createUser(
+            // 로그인 된 상태(=회원가입이 이미 된 상태)에서 회원가입을 할 수 없게 하기 위해 sessionUser를 찾음
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            @Valid @RequestBody CreateUserRequest request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(sessionUser, request));
     }
 
     // 유저 로그인 기능
@@ -54,21 +58,19 @@ public class UserController {
             @PathVariable Long userId,
             @Valid @RequestBody ModifyUserRequest request
     ) {
-        if(sessionUser == null) {
-            throw new AuthenticationRequiredException();
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(userService.modify(userId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.modify(sessionUser, userId, request));
     }
 
     // 유저 삭제 - 회원 탈퇴
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> deleteUser(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+            HttpSession session,
             @PathVariable Long userId) {
-        if(sessionUser == null) {
-            throw new AuthenticationRequiredException();
-        }
-        userService.delete(userId);
+
+        userService.delete(sessionUser, userId);
+
+        session.invalidate();   // 회원 탈퇴 시 자동 로그아웃 처리
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

@@ -25,10 +25,8 @@ public class ScheduleController {
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long userId,
             @Valid @RequestBody CreateScheduleRequest request) {
-        if(sessionUser == null) {
-            throw new AuthenticationRequiredException();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(userId, request));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(sessionUser, userId, request));
     }
 
     // 일정 단건 조회
@@ -36,10 +34,8 @@ public class ScheduleController {
     public ResponseEntity<GetOneScheduleResponse> getOneSchedule(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long scheduleId) {
-        if(sessionUser == null) {
-            throw new AuthenticationRequiredException();
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOne(scheduleId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOne(sessionUser, scheduleId));
     }
 
     // 일정 전체 조회
@@ -47,10 +43,8 @@ public class ScheduleController {
     public ResponseEntity<List<GetAllScheduleResponse>> getAllSchedule(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @RequestParam(required = false) String userName) {
-        if(sessionUser == null) {
-            throw new AuthenticationRequiredException();
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAll(userName));
+
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAll(sessionUser, userName));
     }
 
     // 일정 수정
@@ -60,10 +54,8 @@ public class ScheduleController {
             @PathVariable Long scheduleId,
             @Valid @RequestBody ModifyScheduleRequest request
     ) {
-        if(sessionUser == null) {
-            throw new AuthenticationRequiredException();
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.modify(scheduleId, request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.modify(sessionUser, scheduleId, request));
     }
 
     // 일정 삭제
@@ -71,10 +63,8 @@ public class ScheduleController {
     public ResponseEntity<Void> deleteSchedule(
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @PathVariable Long scheduleId) {
-        if(sessionUser == null) {
-            throw new AuthenticationRequiredException();
-        }
-        scheduleService.delete(scheduleId);
+
+        scheduleService.delete(sessionUser, scheduleId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

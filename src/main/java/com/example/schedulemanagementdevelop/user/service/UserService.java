@@ -1,5 +1,7 @@
 package com.example.schedulemanagementdevelop.user.service;
 
+import com.example.schedulemanagementdevelop.ExceptionHandler.AlreadyLoggedInException;
+import com.example.schedulemanagementdevelop.ExceptionHandler.AuthenticationRequiredException;
 import com.example.schedulemanagementdevelop.ExceptionHandler.LoginFailedException;
 import com.example.schedulemanagementdevelop.ExceptionHandler.NotExistUser;
 import com.example.schedulemanagementdevelop.config.PasswordEncoder;
@@ -21,13 +23,18 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public CreateUserResponse save(CreateUserRequest request) {
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+    public CreateUserResponse save(SessionUser sessionUser, CreateUserRequest request) {
+
+        if(sessionUser != null) {   // 로그인 된 상태(=이미 회원가입된 상태)라면 회원가입 불가
+            throw new AlreadyLoggedInException();
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword()); // 비밀번호 암호화
 
         User user = new User(
                 request.getUserName(),
                 request.getEmail(),
-                encodedPassword
+                encodedPassword // 암호화된 비밀번호를 User 객체에 담기
         );
 
         User savedUser = userRepository.save(user);
@@ -71,7 +78,12 @@ public class UserService {
     }
 
     @Transactional
-    public ModifyUserResponse modify(Long userId, ModifyUserRequest request) {
+    public ModifyUserResponse modify(SessionUser sessionUser, Long userId, ModifyUserRequest request) {
+
+        if(sessionUser == null) {   // 로그인이 안 되어 있는 상태라면 해당 기능 사용불가
+            throw new AuthenticationRequiredException();
+        }
+
         User user = userRepository.findById(userId).orElseThrow(
                 NotExistUser::new
         );
@@ -92,7 +104,12 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(Long userId) {
+    public void delete(SessionUser sessionUser, Long userId) {
+
+        if(sessionUser == null) {   // 로그인이 안 되어 있는 상태라면 해당 기능 사용 불가
+            throw new AuthenticationRequiredException();
+        }
+
         boolean existence = userRepository.existsById(userId);
 
         if(!existence) {
@@ -112,8 +129,9 @@ public class UserService {
                 request.getPassword(),
                 user.getPassword()
         );
+        // 입력한 비밀번호가 일치하는지 확인
 
-        if(!isMatch) {
+        if(!isMatch) {  // 비밀번호가 일치하지 않는다면 예외 처리
             throw new LoginFailedException();
         }
 
