@@ -87,7 +87,7 @@ public class CommentService {
             throw new NotExistSchedule();
         }
 
-        List<Comment> comments = commentRepository.findBySchedule_Id(scheduleId);
+        List<Comment> comments = commentRepository.findAllActiveCommentsBySchedule_Id(scheduleId);
 
         return comments.stream()
                 .map(comment -> new GetAllCommentResponse(
